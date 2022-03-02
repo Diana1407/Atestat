@@ -1,0 +1,102 @@
+cd..
+cd..
+cd work
+mysql -u mysql -p
+mysql
+use work
+show tables;
+select * from admitere;
+
+1.
+select nume,prenume,rezultat,media from admitere where sex='m' order by media desc;
+select nume,prenume,rezultat,media from admitere where sex='f' order by media desc;
+
+2.
+select nume,prenume,media,datan,oras from admitere where rezultat='admis' order by media desc limit 5;
+select nume,prenume,media,datan,oras from amitere where rezultat='admis' order by media asc limit 5;
+
+3.
+select nume,prenume,oras,datan,media from admitere where rezultat='admis' and datan>=date_add(now(),interval -20 year) and datan<=date_add(now(),interval -18 year) order by datan,nume;
+
+4.
+select nume,prenume,proba1,rezultat from admitere order by proba1;
+select nume,prenume,proba2,rezultat from admitere order by proba2;
+
+5.
+select nume,prenume,media,rezultat from admitere order by nume,prenume;
+
+6.
+select @n15:=(select count(media) from admitere where media<=5)
+select @n57:=(select count(media) from admitere where media>5 and media<=7);
+select @n79:=(select count(media) from admitere where media>7 and media<=9);
+select @n910:=(select count(media) from admitere where media>9 and media<=10);
+select @n:=(select count(*) from admitere);
+select round(@n15/@n*100) as procent_15, round(@n57/@n*100) as procent_57, round(@n79/@n*100) as procent_79, round(@n910/@n*100) as procent_910;
+
+7.
+a)
+select nume,prenume,media,rezultat,oras from admitere order by oras,nume,prenume;
+b)
+select @nrcrt:=0;
+select (@nrcrt=@nr+1) as nr,nume,prenume,media,rezultat from admitere where oras='brasov' order by nume,prenume;
+
+8.
+select * from admitere where (oras,media) in (select oras, max(media) from admitere group by oras) order by oras; 
+
+9.
+select nume,prenume,proba1,proba2,datan,media,rezultat from admitere where oras='cluj' and rezultat='admis' order by media desc, nume, prenume;
+select nume,prenume,proba1,proba2,datan,media,rezultat from admitere where oras='cluj' and rezultat='respins', order by media desc, nume, prenume;
+
+10.
+update admitere set proba1=9.50 where nume='dinita' and prenume='razvan';
+update admitere set proba2=5 where nume='lampinean' and prenume='neonila';
+
+11.
+select nume, prenume, oras, media from admitere where oras<>'brasov' and rezultat='admis' order by media desc, proba 1 desc limit 4;
+
+12.
+select nume,prenume,oras,media from admitere where rezultat='admis' and oras<>'brasov' and sex='m' order by media desc, proba1 desc limit 2;
+select nume,prenume,oras,media from admitere where rezultat='admis' and oras<>'brasov' and sex='f' order by media desc, proba1 desc limit 3;
+
+13.
+select nume,prenume,datan from admitere where rezultat='admis' and media>=9.75 and media<=10;
+select nume,prenume,datan from admitere where rezultat='admis' and media>=8.50 and media<=9.74;
+
+14.
+select nume,prenume,datan,oras from admitere where rezultat='respins' and datan<='1996-05-20' and sex='m' order by nume,prenume;
+select nume,prenume,datan,oras from admitere where not(rezultat='respins' and datan<='1996-05-20') and sex='m' order by nume,prenume;
+
+15.
+select @adm:=(select count(*) from admitere where oras='brasov' and rezultat='admis');
+select @res:=(select count(*) from admitere where oras'brasov' and rezultat='respins');
+select @tot:=(select count(*) from admitere where oras='brasov');
+select round(@amd/@tot*100) as procent_admisi;
+select round(@res/@tot*100) as procent_respinsi;
+
+16.
+select round(avg(proba1),2) as media_proba1 from admitere where rezultat='admis');
+select round(avg(proba2),2) as media_proba2 from admitere where rezultat='admis');
+select round(avg(media),2) as media_generala from admitere where rezultat='admis');
+
+17.
+select @min:=select(min(media) from admitere where rezultat='admis');
+select nume,prenume,media,oras from admitere where rezultat='respins' and media>@min;
+
+18.
+select round(avg(media),2) as media_adm from admitere where rezultat='admis';
+select round(avg(media),2) as media_res from admitere where rezultat='respins';
+
+19.
+a)
+select oras, count(*) as nrcand from admitere group by oras;
+
+b)
+select @max:=(select max(nrcand) from select(count(*) as nrcand from admitere group by oras) as nmax);
+select oras,count(*) as nrcand from admitere group by oras having nrcand=@max;
+
+20.
+select @nrord:=0;
+select * from (select (@nrord=@nrord+1) as nrcrt, nume, prenume, oras, media, datan from admitere where rezultat='admis' order by media desc) as coco where nrcrt mod 2=1;
+
+select @nrord:=0;
+select * from (select (@nrord=@nrod+1) as nrcrt, nume, prenume, oras, media, datan from admitere where rezultat='admis' order by media desc) as coco where nrcrt mod 2=0;
